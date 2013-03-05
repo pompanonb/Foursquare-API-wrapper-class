@@ -77,6 +77,13 @@ class foursquare
 	 */
 	private $redirectUrl;
 	
+	/*
+	 * The parameters
+	 * 
+	 * @var array
+	 */
+	private  $parameters;
+	
 	// class methods
 	
 	/**
@@ -95,7 +102,7 @@ class foursquare
 		$this->setRedirectUrl($url);
 		
 		// init parameters array
-		$parameters = array();
+		$this->parameters = array();
 	}
 	
 	/**
@@ -117,35 +124,35 @@ class foursquare
 	public function authenticate()
 	{
 		if($this->oauthToken == null)
+		{
+			// redirect for authorisation
+			if(!$_GET['code'])
 			{
-				// redirect for authorisation
-				if(!$_GET['code'])
-				{
-					$authLink = header('location:' . self::OAUTH_URL . '?client_id=' . self::getClientId() . '&response_type=code&redirect_uri=' . self::getRedirectUrl());
-				}
+				header('location:' . self::OAUTH_URL . '?client_id=' . self::getClientId() . '&response_type=code&redirect_uri=' . self::getRedirectUrl());
+			}
+		
+			// request an access token if we have received a code parameter in the URL
+			else
+			{
+				// build parameters
+				$this->parameters['client_id'] = $this->getClientId();
+				$this->parameters['client_secret'] = $this->getClientSecret();
+				$this->parameters['grant_type'] = 'authorization_code';
+				$this->parameters['redirect_uri'] = $this->getRedirectUrl();
+				$this->parameters['code'] = $_GET['code'];
 			
-				// request an access token if we have received a code parameter in the URL
-				else
-				{
-					// build parameters
-					$parameters['client_id'] = $this->getClientId();
-					$parameters['client_secret'] = $this->getClientSecret();
-					$parameters['grant_type'] = 'authorization_code';
-					$parameters['redirect_uri'] = $this->getRedirectUrl();
-					$parameters['code'] = $_GET['code'];
+				// build complete url
+				$url = self::TOKEN_URL . '?' . $this->buildQuery($this->parameters);
+			
+				// cURL request
+				$response = $this->doCurl($url);
 				
-					// build complete url
-					$url = self::TOKEN_URL . '?' . $this->buildQuery($parameters);
-				
-					// cURL request
-					$response = $this->doCurl($url);
-					
-					// return the access code
-					return (string)$response->access_token;
-				}
+				// return the access code
+				return (string)$response->access_token;
 			}
 		}
-	
+	}
+
 	/**
 	 * Format the parameters as a querystring.
 	 * 
@@ -258,11 +265,11 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 	
 			// build url
-			$url = self::API_URL . 'users/'. $userID . '/badges?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/'. $userID . '/badges?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -296,9 +303,9 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
-			$parameters['sort'] = $sort;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
+			$this->parameters['sort'] = $sort;
 				
 			// check for given parameters
 			if(isset($limit)) $parameters['limit'] = $limit;
@@ -307,7 +314,7 @@ class foursquare
 			if(isset($beforeTimestamp)) $parameters['beforeTimestamp'] = $beforeTimestamp;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/checkins?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/checkins?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -367,15 +374,15 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 			
 			// check for given parameters
 			if(isset($limit)) $parameters['limit'] = $limit;
 			if(isset($offset)) $parameters['offset'] = $offset;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/friends?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/friends?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -404,14 +411,14 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 			
 			// if we have neighbours, append to the parameters
 			if(isset($neighbors)) $parameters['neighbors'] = $neighbors;
 			
 			// build url
-			$url = self::API_URL . 'users/leaderboard?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/leaderboard?' . $this->buildQuery($this->parameters);
 
 			// get the data
 			$response = $this->doCurl($url);
@@ -440,11 +447,11 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 				
 			// build url
-			$url = self::API_URL . 'users/'. $userID . '/mayorships?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/'. $userID . '/mayorships?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -475,15 +482,15 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 				
 			// check for given parameters
 			if(isset($limit)) $parameters['limit'] = $limit;
 			if(isset($offset)) $parameters['offset'] = $offset;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/photos?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/photos?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -538,9 +545,9 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
-			$parameters['sort'] = $sort;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
+			$this->parameters['sort'] = $sort;
 	
 			// check for given parameters
 			if(isset($limit)) $parameters['limit'] = $limit;
@@ -548,7 +555,7 @@ class foursquare
 			if(isset($ll)) $parameters['ll'] = $ll;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/tips?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/tips?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -579,15 +586,15 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
-			$parameters['sort'] = $sort;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
+			$this->parameters['sort'] = $sort;
 	
 			// check for given parameters
 			if(isset($ll)) $parameters['ll'] = $ll;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/todos?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/todos?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
@@ -618,15 +625,15 @@ class foursquare
 		else
 		{
 			// add parameters
-			$parameters['oauth_token'] = $this->getAccessToken();
-			$parameters['v'] = self::API_VERSION;
+			$this->parameters['oauth_token'] = $this->getAccessToken();
+			$this->parameters['v'] = self::API_VERSION;
 	
 			// check for given parameters
 			if(isset($afterTimestamp)) $parameters['afterTimestamp'] = $afterTimestamp;
 			if(isset($beforeTimestamp)) $parameters['beforeTimestamp'] = $beforeTimestamp;
 	
 			// build url
-			$url = self::API_URL . 'users/' . $userID . '/venuehistory?' . $this->buildQuery($parameters);
+			$url = self::API_URL . 'users/' . $userID . '/venuehistory?' . $this->buildQuery($this->parameters);
 	
 			// get the data
 			$response = $this->doCurl($url);
