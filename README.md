@@ -10,20 +10,20 @@ If you encounter any bugs. Feel free to fix or report them.
 * Create an app at Foursquare.
 * Include this class in PHP.
 
-	<?php include 'foursquare.php'; ?>
+    <?php include 'foursquare.php'; ?>
 
 * Use your app's credentials to initiate the class.
 
-	<?php $foursquare = new foursquare(clientID, clientSecret, callbackURL); ?>
+    <?php $foursquare = new foursquare(clientID, clientSecret, callbackURL); ?>
 
 * Authenticate
 
-	<?php $accessToken = $foursquare->authenticate(); ?>
+    <?php $accessToken = $foursquare->authenticate(); ?>
 
 * Store you access token
 
-	<?php $foursquare->setAccessToken($accessToken); ?>
+    <?php $foursquare->setAccessToken($accessToken); ?>
 
 * Use your favourite method
 
-	<?php $mayorships = $foursquare->getMayorshipsFromUser(); ?>
+    <?php $mayorships = $foursquare->getMayorshipsFromUser(); ?>
