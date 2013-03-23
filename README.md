@@ -18,9 +18,13 @@ If you encounter any bugs. Feel free to fix or report them.
 
 * Authenticate
 
-    `<?php $accessToken = $foursquare->authenticate(); ?>`
+    `<?php $foursquare->authenticate(); ?>`
+    
+* Get your access token ($code is received through $_GET['code'])
 
-* Store you access token
+    `<?php $accessToken = $foursquare->getToken($code); ?>`
+
+* Store your access token
 
     `<?php $foursquare->setAccessToken($accessToken); ?>`
 
