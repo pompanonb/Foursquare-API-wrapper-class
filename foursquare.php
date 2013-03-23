@@ -126,31 +126,9 @@ class foursquare
 		if($this->oauthToken == null)
 		{
 			// redirect for authorisation
-			if(!$_GET['code'])
-			{
-				header('location:' . self::OAUTH_URL . '?client_id=' . self::getClientId() . '&response_type=code&redirect_uri=' . self::getRedirectUrl());
-			}
-		
-			// request an access token if we have received a code parameter in the URL
-			else
-			{
-				// build parameters
-				$this->parameters['client_id'] = $this->getClientId();
-				$this->parameters['client_secret'] = $this->getClientSecret();
-				$this->parameters['grant_type'] = 'authorization_code';
-				$this->parameters['redirect_uri'] = $this->getRedirectUrl();
-				$this->parameters['code'] = $_GET['code'];
-			
-				// build complete url
-				$url = self::TOKEN_URL . '?' . $this->buildQuery($this->parameters);
-			
-				// cURL request
-				$response = $this->doCurl($url);
-				
-				// return the access code
-				return (string)$response->access_token;
-			}
+			header('location:' . self::OAUTH_URL . '?client_id=' . self::getClientId() . '&response_type=code&redirect_uri=' . self::getRedirectUrl());
 		}
+		else return $this->oauthToken;
 	}
 
 	/**
@@ -275,7 +253,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->badges;
+			return (array)$response;
 		}
 	}
 	
@@ -320,7 +298,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->checkins->items;
+			return (array)$response;
 		}
 	}
 	
@@ -388,7 +366,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->friends;
+			return (array)$response;
 		}
 	}
 	
@@ -424,7 +402,7 @@ class foursquare
 			$response = $this->doCurl($url);
 			
 			// return
-			return (array)$response->response->leaderboard->items;
+			return (array)$response;
 		}
 	}
 	
@@ -457,7 +435,7 @@ class foursquare
 			$response = $this->doCurl($url);
 				
 			// return
-			return (array)$response->response->mayorships->items;
+			return (array)$response;
 		}
 	}
 	
@@ -496,7 +474,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->photos;
+			return (array)$response;
 		}
 	}
 	
@@ -510,6 +488,42 @@ class foursquare
 	{
 		return (string) $this->redirectUrl;
 	}
+	
+	/**
+	 * Retrieve an oAuthToken
+	 * 
+	 * @since 1.0.0
+	 * @return string
+	 * 
+	 * @param string $code The code retrieved by the authenticate function
+	 */
+	 public function getToken($code)
+	 {
+	 	if(!isset($code))
+	 	{
+	 		throw new Exception ('No authentication code given');
+	 	}
+	 	
+	 	// request an access token if we have received a code parameter in the URL
+		else
+		{
+			// build parameters
+			$this->parameters['client_id'] = $this->getClientId();
+			$this->parameters['client_secret'] = $this->getClientSecret();
+			$this->parameters['grant_type'] = 'authorization_code';
+			$this->parameters['redirect_uri'] = $this->getRedirectUrl();
+			$this->parameters['code'] = $code;
+			
+			// build complete url
+			$url = self::TOKEN_URL . '?' . $this->buildQuery($this->parameters);
+			
+			// cURL request
+			$response = $this->doCurl($url);
+				
+			// return the access code
+			return (string)$response->access_token;
+		}
+	 }
 	
 	/**
 	 * Get the token.
@@ -530,7 +544,7 @@ class foursquare
 	 * @param int $limit[optional] The amount of friends to display. Max. 250
 	 * @param int $offset[optional] Used for paged views.
 	 * @param string $sort[optional] Sort the results. Value: recent, nearby or popular
-	 * @param string $ll[optional] Cošrdinates of the user. (syntax: lattitude, longitude)
+	 * @param string $ll[optional] Coï¿½rdinates of the user. (syntax: lattitude, longitude)
 	 * @return array
 	 */
 	public function getTipsFromUser($userID = 'self', $limit = null, $offset = null, $sort = 'recent', $ll = null)
@@ -561,7 +575,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->tips->items;
+			return (array)$response;
 		}
 	}
 	
@@ -571,7 +585,7 @@ class foursquare
 	 * @since 1.0.0
 	 * @param string $userID[optional] The id of the user. Default value = self (acting user) is only supported for now.
 	 * @param string $sort[optional] Sort the results. Value: recent, nearby or popular
-	 * @param string $ll[optional] Cošrdinates of the user. (syntax: lattitude, longitude)
+	 * @param string $ll[optional] Coï¿½rdinates of the user. (syntax: lattitude, longitude)
 	 * @return array
 	 */
 	public function getTodoFromUser($userID = 'self', $sort = 'recent', $ll = null)
@@ -600,7 +614,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->todos->items;
+			return (array)$response;
 		}
 	}
 	
@@ -639,7 +653,7 @@ class foursquare
 			$response = $this->doCurl($url);
 	
 			// return
-			return (array)$response->response->venues;
+			return (array)$response;
 		}
 	}
 	
