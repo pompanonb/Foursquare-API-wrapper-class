@@ -116,7 +116,7 @@ class foursquare
 	}
 	
 	/**
-	 * This function gets and stores the access token in to the register.
+	 * Redirects to start the authentication process or returns the oAuthToken. 
 	 * 
 	 * @since 1.0.0
 	 * @return string
@@ -286,14 +286,14 @@ class foursquare
 			$this->parameters['sort'] = $sort;
 				
 			// check for given parameters
-			if(isset($limit)) $parameters['limit'] = $limit;
-			if(isset($offset)) $parameters['offset'] = $offset;
-			if(isset($afterTimestamp)) $parameters['afterTimestamp'] = $afterTimestamp;
-			if(isset($beforeTimestamp)) $parameters['beforeTimestamp'] = $beforeTimestamp;
+			if(isset($limit)) $this->parameters['limit'] = $limit;
+			if(isset($offset)) $this->parameters['offset'] = $offset;
+			if(isset($afterTimestamp)) $this->parameters['afterTimestamp'] = $afterTimestamp;
+			if(isset($beforeTimestamp)) $this->parameters['beforeTimestamp'] = $beforeTimestamp;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/checkins?' . $this->buildQuery($this->parameters);
-	
+
 			// get the data
 			$response = $this->doCurl($url);
 	
@@ -356,8 +356,8 @@ class foursquare
 			$this->parameters['v'] = self::API_VERSION;
 			
 			// check for given parameters
-			if(isset($limit)) $parameters['limit'] = $limit;
-			if(isset($offset)) $parameters['offset'] = $offset;
+			if(isset($limit)) $this->parameters['limit'] = $limit;
+			if(isset($offset)) $$this->parameters['offset'] = $offset;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/friends?' . $this->buildQuery($this->parameters);
@@ -393,7 +393,7 @@ class foursquare
 			$this->parameters['v'] = self::API_VERSION;
 			
 			// if we have neighbours, append to the parameters
-			if(isset($neighbors)) $parameters['neighbors'] = $neighbors;
+			if(isset($neighbors)) $this->parameters['neighbors'] = $neighbors;
 			
 			// build url
 			$url = self::API_URL . 'users/leaderboard?' . $this->buildQuery($this->parameters);
@@ -464,8 +464,8 @@ class foursquare
 			$this->parameters['v'] = self::API_VERSION;
 				
 			// check for given parameters
-			if(isset($limit)) $parameters['limit'] = $limit;
-			if(isset($offset)) $parameters['offset'] = $offset;
+			if(isset($limit)) $this->parameters['limit'] = $limit;
+			if(isset($offset)) $this->parameters['offset'] = $offset;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/photos?' . $this->buildQuery($this->parameters);
@@ -564,9 +564,9 @@ class foursquare
 			$this->parameters['sort'] = $sort;
 	
 			// check for given parameters
-			if(isset($limit)) $parameters['limit'] = $limit;
-			if(isset($offset)) $parameters['offset'] = $offset;
-			if(isset($ll)) $parameters['ll'] = $ll;
+			if(isset($limit)) $this->parameters['limit'] = $limit;
+			if(isset($offset)) $this->parameters['offset'] = $offset;
+			if(isset($ll)) $this->parameters['ll'] = $ll;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/tips?' . $this->buildQuery($this->parameters);
@@ -605,7 +605,7 @@ class foursquare
 			$this->parameters['sort'] = $sort;
 	
 			// check for given parameters
-			if(isset($ll)) $parameters['ll'] = $ll;
+			if(isset($ll)) $this->parameters['ll'] = $ll;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/todos?' . $this->buildQuery($this->parameters);
@@ -643,8 +643,8 @@ class foursquare
 			$this->parameters['v'] = self::API_VERSION;
 	
 			// check for given parameters
-			if(isset($afterTimestamp)) $parameters['afterTimestamp'] = $afterTimestamp;
-			if(isset($beforeTimestamp)) $parameters['beforeTimestamp'] = $beforeTimestamp;
+			if(isset($afterTimestamp)) $this->parameters['afterTimestamp'] = $afterTimestamp;
+			if(isset($beforeTimestamp)) $this->parameters['beforeTimestamp'] = $beforeTimestamp;
 	
 			// build url
 			$url = self::API_URL . 'users/' . $userID . '/venuehistory?' . $this->buildQuery($this->parameters);
